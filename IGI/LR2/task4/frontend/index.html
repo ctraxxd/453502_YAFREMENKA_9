@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <title>MEAN Docker App</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        input {
+            padding: 8px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 8px 12px;
+        }
+        ul {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body ng-controller="MainController">
+
+    <h1>MEAN Stack Docker Application</h1>
+
+    <input type="text" ng-model="newItem" placeholder="Enter item">
+    <button ng-click="addItem()">Add Item</button>
+
+    <ul>
+        <li ng-repeat="item in items">
+            {{item.name}}
+        </li>
+    </ul>
+
+<script>
+angular.module("app", [])
+.controller("MainController", function($scope, $http) {
+
+    const API = "http://localhost:5001/items";
+
+    function loadItems() {
+        $http.get(API)
+            .then(function(response) {
+                $scope.items = response.data;
+            })
+            .catch(function(error) {
+                console.error("Error loading items:", error);
+            });
+    }
+
+    $scope.addItem = function() {
+        if (!$scope.newItem) return;
+
+        $http.post(API, { name: $scope.newItem })
+            .then(function() {
+                $scope.newItem = "";
+                loadItems();
+            })
+            .catch(function(error) {
+                console.error("Error adding item:", error);
+            });
+    };
+
+    loadItems();
+});
+</script>
+
+</body>
+</html>
